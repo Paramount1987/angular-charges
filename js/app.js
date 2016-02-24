@@ -32,18 +32,19 @@ app.controller('ChargeAppCtrl', function($scope,$filter){
 	};
 
 	$scope.compoteTotalSum = function(){
+		$scope.totalSum = 0;
 		for(var i = 0; i < $scope.charges.length; i++){
 				$scope.totalSum += $scope.charges[i].status? $scope.charges[i].value : 0; 
 		}
 	};
 	$scope.compoteTotalCost = function(){
+		$scope.totalCost = 0;
 		for(var i = 0; i < $scope.costs.length; i++){
 				$scope.totalCost += $scope.costs[i].status? $scope.costs[i].value : 0; 	
 		}
 	};
 
 	$scope.getTotalSum = function(index,indexSort){		
-		$scope.totalSum = 0;
 		$scope.compoteTotalSum();
 
 		if(index === undefined || indexSort === undefined) return;
@@ -54,7 +55,6 @@ app.controller('ChargeAppCtrl', function($scope,$filter){
 	};
 	$scope.getTotalCost = function(index,indexSort){
 
-		$scope.totalCost = 0;
 		$scope.compoteTotalCost();
 
 		if(index === undefined || indexSort === undefined) return;
@@ -63,13 +63,13 @@ app.controller('ChargeAppCtrl', function($scope,$filter){
 		PieChart.update();
 		
 	};
-	$scope.removeCharge = function(index,indexSort){
-		PieChart.removeData($filter('searchChartId')(PieChart.segments, index));
+	$scope.removeCharge = function(indexSort){
+		PieChart.removeData($filter('searchChartId')(PieChart.segments, indexSort));
 		$scope.charges.splice(indexSort,1);
 		chargeslength = $scope.charges.length;
 		$scope.getTotalSum();
 	};
-	$scope.removeCost = function(index,indexSort){
+	$scope.removeCost = function(indexSort){
 		PieChart.removeData($filter('searchChartId')(PieChart.segments, index));
 		$scope.costs.splice(indexSort,1);
 		costslength = $scope.costs.length;
@@ -87,6 +87,13 @@ app.controller('ChargeAppCtrl', function($scope,$filter){
 			$scope.costs = $filter('orderBy')($scope.costs, 'value',$scope.reverseByMoneyCost);
 			$scope.reverseByMoneyCost == true ? $scope.reverseByMoneyCost = false : $scope.reverseByMoneyCost = true;
 		}
+
+		PieChart.destroy();
+		arrChart = $scope.charges.concat($scope.costs);
+		var ctx = document.getElementById("chart-area").getContext("2d");	
+		PieChart = new Chart(ctx).Pie(arrChart, {
+				responsive:true
+		});
 
 	};
 
@@ -148,55 +155,58 @@ app.directive('editInput',function($filter){
 		restrict: 'E',
 		replace: true,
 		template: function(elem,attr){
-			var typeValue = attr.type + ".value";
-			var typeIndex = attr.type + ".index"
-			return	'<input type="number" class="td-input-item transparent" ng-model="' + typeValue + '" value="{{' + typeValue + '}}" index={{' + typeIndex + '}} />';
+			return	'<input type="number" class="td-input-item transparent"  ng-model="charge.value" />';
 		},
 		link: function(scope,element,attrs){
-				element.on('change',function(event){
-					 PieChart.segments[$filter('searchChartId')(PieChart.segments, +attrs.index)].value = attrs.value;
-					 PieChart.update();
+				element.bind('change',function(event){
+					 // PieChart.segments[$filter('searchChartId')(PieChart.segments, +attrs.index)].value = element.value;
+					 // PieChart.update();
+					 scope.compoteTotalSum();
+		       scope.compoteTotalCost();
+
 				});
-				element.on('blur',function(){
+				element.bind('blur',function(){
 					element.addClass('transparent');
 				});
-				element.on('focus',function(){
+				element.bind('focus',function(){
 					element.removeClass("transparent");
 				});
 		}
 	};
 });
 
-app.directive('editTitle',function($filter){
-	return {
-		restrict: 'E',
-		replace: true,
-		template: function(elem,attr){
-			var typeValue = attr.type + ".label";
-			var typeIndex = attr.type + ".index"
-			return	'<input type="text" class="td-input-item transparent" ng-model="' + typeValue + '" value="{{' + typeValue + '}}" index={{' + typeIndex + '}} />';
-		},
-		link: function(scope,element,attrs){
-				element.on('change',function(event){
-					 PieChart.segments[$filter('searchChartId')(PieChart.segments, +attrs.index)].label = attrs.value;
-					 PieChart.update();
-				});
-				element.on('blur',function(){
-					element.addClass('transparent');
-				});
-				element.on('focus',function(){
-					element.removeClass("transparent");
-				});
-		}
-	};
-});
+// app.directive('editTitle',function($filter){
+// 	return {
+// 		restrict: 'E',
+// 		replace: true,
+// 		template: function(elem,attr){
+// 			var typeValue = attr.ngValue + ".label";
+// 			var typeIndex = attr.ngValue + ".index";
+// 			return	'<input type="text" class="td-input-item transparent" ng-model="' + typeValue + '" value="{{' + typeValue + '}}" index={{' + typeIndex + '}} />';
+// 		},
+// 		link: function(scope,element,attrs){
+// 				element.on('change',function(event){
+// 					 PieChart.segments[$filter('searchChartId')(PieChart.segments, +attrs.index)].label = attrs.value;
+// 					 PieChart.update();
+// 				});
+// 				element.on('blur',function(){
+// 					element.addClass('transparent');
+// 				});
+// 				element.on('focus',function(){
+// 					element.removeClass("transparent");
+// 				});
+// 		}
+// 	};
+// });
 ///////////////////////////////////filter by id
 app.filter('searchChartId',function(){
 	return function(arr,id){
 			var i = 0, len = arr.length;
 			for(;i < len; i++){
 					if(i == id){
+						console.log(i);
 					return i;
+					
 				}
 			}
 

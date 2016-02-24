@@ -44,11 +44,13 @@
 					<tr ng-repeat="charge in charges" ng-class="charge.status? 'aviable' : 'unaviable'">
 						<td >
 							<input type="checkbox" ng-model="charge.status" ng-change="getTotalSum(charge.index,$index)">
-							<button ng-click="removeCharge(charge.index,$index)" class="transparent"><span class="glyphicon glyphicon-remove"></span></button>
+							<button ng-click="removeCharge($index)" class="transparent"><span class="glyphicon glyphicon-remove"></span></button>
 						</td>
 						<td>{{$index + 1}}</td>
-						<td class='td-input'><divclass="name-charge" ng-model="charge.label">{{charge.label}}</div><edit-title type="charge"></edit-title></td>
-						<td class='td-input'>{{charge.value | currency:"&#8381; "}}<edit-input type="charge"></edit-input></td>
+						<td class='td-input'><divclass="name-charge" ng-model="charge.label">{{charge.label}}</div></td>
+						<td class='td-input'>{{charge.value | currency:"&#8381; "}}
+							<edit-input></edit-input>
+						</td>
 					</tr>
 				</table>
 			</div>
@@ -84,11 +86,11 @@
 					<tr ng-repeat="cost in costs" ng-class="cost.status? 'aviable' : 'unaviable'">
 						<td >
 							<input type="checkbox" ng-model="cost.status" ng-change="getTotalCost(cost.index,$index)">
-							<button ng-click="removeCost(cost.index,$index)" class="transparent"><span class="glyphicon glyphicon-remove"></span></button>
+							<button ng-click="removeCost($index)" class="transparent"><span class="glyphicon glyphicon-remove"></span></button>
 						</td>
 						<td>{{$index + 1}}</td>
-						<td class='td-input'><div class="name-cost">{{cost.label}}</div><edit-title type="cost"></edit-title></td>
-						<td class='td-input'>{{cost.value  | currency:"&#8381; "}}<edit-input type="cost"></edit-input></td>
+						<td class='td-input'><div class="name-cost">{{cost.label}}</div></td>
+						<td class='td-input'>{{cost.value  | currency:"&#8381; "}}</td>
 					</tr>
 				</table>
 			</div>
